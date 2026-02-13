@@ -47,7 +47,9 @@
       border: 1px solid rgba(255,255,255,.14);
       box-shadow: var(--shadow);
       overflow:hidden;
+      position:relative;
     }
+
     .hero{ padding: 34px 22px 18px; text-align:center; }
     .title{
       margin:0;
@@ -56,7 +58,8 @@
       line-height:1.15;
       text-shadow: 0 10px 30px rgba(0,0,0,.35);
     }
-    .btnRow{ display:flex; justify-content:center; margin-top: 16px; }
+
+    .btnRow{ display:flex; justify-content:center; gap:10px; margin-top: 16px; flex-wrap:wrap; }
     .btn{
       appearance:none; border:0; cursor:pointer;
       padding: 13px 18px; border-radius: 999px;
@@ -69,6 +72,23 @@
     }
     .btn:hover{ filter: brightness(1.02); }
     .btn:active{ transform: translateY(1px) scale(.99); }
+
+    .btnSmall{
+      appearance:none;
+      cursor:pointer;
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 13px;
+      color: rgba(255,255,255,.92);
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      box-shadow: 0 10px 24px rgba(0,0,0,.22);
+      transition: transform .12s ease, filter .2s ease, opacity .2s ease;
+      user-select:none;
+    }
+    .btnSmall:hover{ filter: brightness(1.05); }
+    .btnSmall:active{ transform: translateY(1px) scale(.99); }
 
     .sliderWrap{
       border-top: 1px solid rgba(255,255,255,.10);
@@ -134,6 +154,8 @@
 
     .fadeIn{ animation: fadeIn .55s ease both; }
     @keyframes fadeIn{ from{ opacity:0; transform: translateY(10px); } to{ opacity:1; transform: translateY(0); } }
+
+    .hidden{ display:none !important; }
   </style>
 </head>
 <body>
@@ -142,7 +164,8 @@
 
   <div class="wrap">
     <main class="card" role="main">
-      <section class="hero">
+
+      <section id="hero" class="hero">
         <h1 class="title">Валентины мэндчилгээ</h1>
         <div class="btnRow">
           <button id="openBtn" class="btn" type="button">Хайрт чамдаа</button>
@@ -150,6 +173,10 @@
       </section>
 
       <section id="sliderWrap" class="sliderWrap">
+        <div class="btnRow" style="margin-top:0; margin-bottom:12px;">
+          <button id="backBtn" class="btnSmall" type="button">⟵ Буцах</button>
+        </div>
+
         <div id="slider" class="slider" tabindex="0" aria-label="Мэндчилгээний хуудсууд">
           <article class="slide" data-index="0">
             <div class="media">
@@ -178,7 +205,7 @@
               radial-gradient(650px 340px at 80% 70%, rgba(255,134,178,.22), transparent 62%),
               linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.04));">
               <svg viewBox="0 0 64 64" width="160" height="160" fill="none" aria-hidden="true"
-                   style="filter: drop-shadow(0 18px 25px rgba(0,0,0,.35)); opacity:.95; animation: pulse 1.8s ease-in-out infinite;">
+                   style="filter: drop-shadow(0 18px 25px rgba(0,0,0,.35)); opacity:.95;">
                 <path d="M32 56s-18-10.8-24.6-22.7C1.8 22.1 8.6 10 21 12.2c5.5 1 9.1 5.6 11 9.1 1.9-3.5 5.5-8.1 11-9.1C55.4 10 62.2 22.1 56.6 33.3 50 45.2 32 56 32 56Z"
                   fill="url(#g4)"/>
                 <defs>
@@ -199,33 +226,42 @@
           <span class="dot" id="dot3"></span>
         </div>
       </section>
+
     </main>
   </div>
 
   <script>
     const openBtn = document.getElementById('openBtn');
+    const backBtn = document.getElementById('backBtn');
+    const hero = document.getElementById('hero');
     const sliderWrap = document.getElementById('sliderWrap');
     const slider = document.getElementById('slider');
     const dots = [0,1,2,3].map(i => document.getElementById('dot'+i));
 
     openBtn.addEventListener('click', () => {
+      hero.classList.add('hidden');
       sliderWrap.classList.add('show','fadeIn');
-      sliderWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setTimeout(() => slider.children[0].scrollIntoView({behavior:'smooth', inline:'center'}), 200);
-      openBtn.disabled = true;
-      openBtn.style.opacity = .85;
-      openBtn.textContent = "Нээгдлээ ❤️";
+      setTimeout(() => slider.children[0].scrollIntoView({behavior:'smooth', inline:'center'}), 150);
+    });
+
+    backBtn.addEventListener('click', () => {
+      sliderWrap.classList.remove('show','fadeIn');
+      hero.classList.remove('hidden');
+      openBtn.blur();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
     function updateDots() {
       const slides = Array.from(slider.querySelectorAll('.slide'));
       const centerX = slider.scrollLeft + slider.clientWidth / 2;
       let bestIndex = 0, bestDist = Infinity;
+
       slides.forEach((s, idx) => {
         const x = s.offsetLeft + s.clientWidth / 2;
         const d = Math.abs(x - centerX);
         if (d < bestDist) { bestDist = d; bestIndex = idx; }
       });
+
       dots.forEach((d,i) => d.classList.toggle('active', i === bestIndex));
     }
     slider.addEventListener('scroll', () => window.requestAnimationFrame(updateDots));
@@ -266,6 +302,7 @@
       ctx.translate(x, y);
       ctx.rotate(rot);
       ctx.globalAlpha = alpha;
+
       const g = ctx.createLinearGradient(-s, -s, s, s);
       g.addColorStop(0, 'rgba(255,77,141,1)');
       g.addColorStop(1, 'rgba(255,134,178,1)');
@@ -288,10 +325,12 @@
     function tick() {
       ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
       if (Math.random() < 0.35) spawnHeart();
+
       for (const h of hearts) {
         h.y += h.speed;
         h.x += h.drift;
         h.rot += h.rotSpeed;
+
         if (h.y > window.innerHeight + 40) {
           h.y = rand(-80, -220);
           h.x = rand(0, window.innerWidth);
@@ -307,4 +346,4 @@
     tick();
   </script>
 </body>
-            </html>
+</html>
