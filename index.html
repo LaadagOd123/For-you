@@ -7,7 +7,7 @@
   <style>
     :root{
       --bg1:#0b0610; --bg2:#16081d;
-      --text:#fff; --muted:#ffffffc8;
+      --text:#fff;
       --accent:#ff4d8d; --accent2:#ff86b2;
       --shadow: 0 18px 60px rgba(0,0,0,.55);
       --radius: 22px;
@@ -47,9 +47,8 @@
       border: 1px solid rgba(255,255,255,.14);
       box-shadow: var(--shadow);
       overflow:hidden;
-      position:relative;
     }
-    .hero{ padding: 34px 22px 26px; text-align:center; position:relative; }
+    .hero{ padding: 34px 22px 18px; text-align:center; }
     .title{
       margin:0;
       font-size: clamp(26px, 3.7vw, 44px);
@@ -57,8 +56,7 @@
       line-height:1.15;
       text-shadow: 0 10px 30px rgba(0,0,0,.35);
     }
-    .subtitle{ margin: 10px 0 0; color: var(--muted); font-size: 15px; line-height:1.5; }
-    .btnRow{ display:flex; justify-content:center; margin-top: 18px; }
+    .btnRow{ display:flex; justify-content:center; margin-top: 16px; }
     .btn{
       appearance:none; border:0; cursor:pointer;
       padding: 13px 18px; border-radius: 999px;
@@ -72,13 +70,10 @@
     .btn:hover{ filter: brightness(1.02); }
     .btn:active{ transform: translateY(1px) scale(.99); }
 
-    .hint{ margin-top: 14px; font-size: 13px; color: rgba(255,255,255,.78); display:none; }
-    .hint.show{ display:block; }
-
     .sliderWrap{
       border-top: 1px solid rgba(255,255,255,.10);
       background: linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.22));
-      padding: 18px 16px 18px;
+      padding: 16px 16px 18px;
       display:none;
     }
     .sliderWrap.show{ display:block; }
@@ -100,14 +95,12 @@
       border-radius: 18px;
       box-shadow: 0 16px 40px rgba(0,0,0,.35);
       overflow:hidden;
-      position:relative;
     }
     @media (min-width: 860px){ .slide{ flex-basis: 58%; } }
 
     .media{
       height: clamp(240px, 45vw, 380px);
       background: rgba(255,255,255,.05);
-      position:relative;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -138,38 +131,9 @@
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       transform: scale(1.25);
     }
-    .tiny{ text-align:center; padding: 12px 14px 20px; color: rgba(255,255,255,.70); font-size: 12.5px; }
+
     .fadeIn{ animation: fadeIn .55s ease both; }
     @keyframes fadeIn{ from{ opacity:0; transform: translateY(10px); } to{ opacity:1; transform: translateY(0); } }
-
-    .ribbon{
-      position:absolute; top:10px; left:10px;
-      display:flex; align-items:center; gap:8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      background: rgba(0,0,0,.18);
-      border: 1px solid rgba(255,255,255,.12);
-      backdrop-filter: blur(8px);
-      color: rgba(255,255,255,.88);
-      font-size: 12.5px;
-    }
-    .ribbon .mini{
-      width:14px; height:14px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      transform: rotate(45deg);
-      border-radius: 4px;
-      position:relative;
-    }
-    .ribbon .mini::before,
-    .ribbon .mini::after{
-      content:"";
-      position:absolute;
-      width:14px; height:14px;
-      background: inherit;
-      border-radius: 999px;
-      top:-7px; left:0;
-    }
-    .ribbon .mini::after{ top:0; left:-7px; }
   </style>
 </head>
 <body>
@@ -178,15 +142,11 @@
 
   <div class="wrap">
     <main class="card" role="main">
-      <div class="ribbon"><span class="mini" aria-hidden="true"></span><span>Swipe/гүйлгээд үзээрэй</span></div>
-
       <section class="hero">
         <h1 class="title">Валентины мэндчилгээ</h1>
-        <p class="subtitle">Доторх товчийг дараад хажуу тийшээ гүйлгэж уншаарай. ❤️</p>
         <div class="btnRow">
           <button id="openBtn" class="btn" type="button">Хайрт чамдаа</button>
         </div>
-        <div id="hint" class="hint">Одоо хажуу тийшээ гүйлгээд (swipe) дараагийн хуудсуудыг үзээрэй. ✨</div>
       </section>
 
       <section id="sliderWrap" class="sliderWrap">
@@ -239,21 +199,17 @@
           <span class="dot" id="dot3"></span>
         </div>
       </section>
-
-      <div class="tiny">❤️ Валентины өдрийн халуун дулаан мэдрэмжийг чамд зориуллаа.</div>
     </main>
   </div>
 
   <script>
     const openBtn = document.getElementById('openBtn');
     const sliderWrap = document.getElementById('sliderWrap');
-    const hint = document.getElementById('hint');
     const slider = document.getElementById('slider');
     const dots = [0,1,2,3].map(i => document.getElementById('dot'+i));
 
     openBtn.addEventListener('click', () => {
       sliderWrap.classList.add('show','fadeIn');
-      hint.classList.add('show');
       sliderWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
       setTimeout(() => slider.children[0].scrollIntoView({behavior:'smooth', inline:'center'}), 200);
       openBtn.disabled = true;
@@ -351,4 +307,4 @@
     tick();
   </script>
 </body>
-  </html>
+            </html>
