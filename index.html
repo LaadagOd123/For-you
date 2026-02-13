@@ -1,469 +1,354 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="mn">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>For You 💌</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Валентины мэндчилгээ</title>
+  <style>
+    :root{
+      --bg1:#0b0610; --bg2:#16081d;
+      --text:#fff; --muted:#ffffffc8;
+      --accent:#ff4d8d; --accent2:#ff86b2;
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --radius: 22px;
+    }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 20% 15%, rgba(255,77,141,.22), transparent 55%),
+        radial-gradient(900px 500px at 85% 35%, rgba(255,134,178,.18), transparent 58%),
+        linear-gradient(160deg, var(--bg1), var(--bg2));
+      overflow-x:hidden;
+    }
+    .glow{
+      position:fixed; inset:-40px; z-index:-3;
+      background:
+        radial-gradient(500px 260px at 10% 20%, rgba(255,77,141,.14), transparent 65%),
+        radial-gradient(520px 280px at 85% 70%, rgba(255,134,178,.12), transparent 62%),
+        radial-gradient(420px 240px at 55% 15%, rgba(255,255,255,.06), transparent 60%);
+      filter: blur(12px);
+      animation: floatGlow 9s ease-in-out infinite alternate;
+    }
+    @keyframes floatGlow{
+      from{ transform: translate3d(0,0,0) scale(1); opacity:.85; }
+      to  { transform: translate3d(0,-10px,0) scale(1.03); opacity:1; }
+    }
+    canvas#hearts{ position:fixed; inset:0; z-index:-2; pointer-events:none; }
 
-<style>
-  :root{
-    --bg1:#ff9a9e;
-    --bg2:#fad0c4;
-    --accent:#ff3b6b;
-    --card:#ffffffee;
-    --ink:#1e1e1e;
-  }
+    .wrap{ min-height:100%; display:flex; align-items:center; justify-content:center; padding:24px; }
+    .card{
+      width:min(980px, 100%);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .hero{ padding: 34px 22px 26px; text-align:center; position:relative; }
+    .title{
+      margin:0;
+      font-size: clamp(26px, 3.7vw, 44px);
+      letter-spacing: .3px;
+      line-height:1.15;
+      text-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    .subtitle{ margin: 10px 0 0; color: var(--muted); font-size: 15px; line-height:1.5; }
+    .btnRow{ display:flex; justify-content:center; margin-top: 18px; }
+    .btn{
+      appearance:none; border:0; cursor:pointer;
+      padding: 13px 18px; border-radius: 999px;
+      font-weight: 700; font-size: 15px;
+      color:#1a0610;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 14px 35px rgba(255,77,141,.25);
+      transition: transform .12s ease, filter .2s ease;
+      user-select:none;
+    }
+    .btn:hover{ filter: brightness(1.02); }
+    .btn:active{ transform: translateY(1px) scale(.99); }
 
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    height:100vh;
-    overflow:hidden;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    background: linear-gradient(135deg, var(--bg1), var(--bg2));
-    display:flex;
-    justify-content:center;
-    align-items:center;
-  }
+    .hint{ margin-top: 14px; font-size: 13px; color: rgba(255,255,255,.78); display:none; }
+    .hint.show{ display:block; }
 
-  /* dreamy moving glow */
-  .glow{
-    position:fixed; inset:-40%;
-    background:
-      radial-gradient(circle at 30% 30%, #ffffff70, transparent 55%),
-      radial-gradient(circle at 70% 70%, #ffffff55, transparent 55%),
-      radial-gradient(circle at 45% 85%, #fff3, transparent 60%);
-    filter: blur(30px);
-    animation: drift 10s ease-in-out infinite alternate;
-    pointer-events:none;
-  }
-  @keyframes drift{
-    from{ transform: translate(-2%,-2%) scale(1.05); }
-    to{ transform: translate(2%,2%) scale(1.12); }
-  }
+    .sliderWrap{
+      border-top: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.22));
+      padding: 18px 16px 18px;
+      display:none;
+    }
+    .sliderWrap.show{ display:block; }
+    .slider{
+      display:flex; gap:14px;
+      overflow-x:auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding: 6px 4px 14px;
+    }
+    .slider::-webkit-scrollbar{ height:10px; }
+    .slider::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.18); border-radius:999px; }
 
-  /* floating hearts background */
-  .h{
-    position:fixed;
-    bottom:-10vh;
-    left:var(--x);
-    font-size:var(--s);
-    opacity:var(--o);
-    filter: drop-shadow(0 10px 16px rgba(0,0,0,.18));
-    animation: floatUp var(--d) linear infinite;
-    pointer-events:none;
-    transform: translateZ(0);
-  }
-  @keyframes floatUp{
-    to{ transform: translateY(-120vh) rotate(360deg); }
-  }
+    .slide{
+      flex: 0 0 86%;
+      scroll-snap-align: center;
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 18px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.35);
+      overflow:hidden;
+      position:relative;
+    }
+    @media (min-width: 860px){ .slide{ flex-basis: 58%; } }
 
-  /* main stage */
-  .stage{
-    width:min(92vw, 520px);
-    padding:16px;
-    position:relative;
-  }
+    .media{
+      height: clamp(240px, 45vw, 380px);
+      background: rgba(255,255,255,.05);
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .media img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .caption{
+      padding: 16px 16px 18px;
+      font-size: clamp(16px, 2.6vw, 18px);
+      line-height: 1.55;
+      color: rgba(255,255,255,.94);
+    }
+    .caption strong{ color:#fff; }
 
-  .title{
-    text-align:center;
-    margin:0 0 14px;
-    color:#fff;
-    font-weight:900;
-    letter-spacing:.2px;
-    text-shadow: 0 8px 18px rgba(0,0,0,.18);
-    font-size: clamp(18px, 4.4vw, 22px);
-  }
+    .progress{ display:flex; justify-content:center; gap: 8px; padding: 6px 0 0; opacity:.9; }
+    .dot{
+      width:8px; height:8px;
+      border-radius:999px;
+      background: rgba(255,255,255,.25);
+      border:1px solid rgba(255,255,255,.18);
+      transition: transform .15s ease, background .15s ease;
+    }
+    .dot.active{
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      transform: scale(1.25);
+    }
+    .tiny{ text-align:center; padding: 12px 14px 20px; color: rgba(255,255,255,.70); font-size: 12.5px; }
+    .fadeIn{ animation: fadeIn .55s ease both; }
+    @keyframes fadeIn{ from{ opacity:0; transform: translateY(10px); } to{ opacity:1; transform: translateY(0); } }
 
-  /* envelope block */
-  .envelopeWrap{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    margin: 0 auto;
-    position:relative;
-  }
-
-  /* envelope size responsive */
-  .envelope{
-    width:min(88vw, 420px);
-    height:260px;
-    position:relative;
-    cursor:pointer;
-    -webkit-tap-highlight-color: transparent;
-    transform: translateY(0);
-    transition: transform .25s ease;
-  }
-  .envelope:active{ transform: translateY(2px) scale(.995); }
-
-  /* envelope base */
-  .env-back{
-    position:absolute; inset:0;
-    background: linear-gradient(180deg, #fff, #ffe9ee);
-    border-radius:24px;
-    box-shadow: 0 18px 55px rgba(0,0,0,.22);
-    border:1px solid rgba(255,255,255,.75);
-    overflow:hidden;
-  }
-
-  /* bottom pocket */
-  .pocket{
-    position:absolute; left:0; right:0; bottom:0;
-    height:62%;
-    background: linear-gradient(135deg, #fff, #ffd3dc);
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-    border-top:1px solid rgba(0,0,0,.06);
-  }
-
-  /* left + right folds */
-  .fold-left, .fold-right{
-    position:absolute;
-    top:38%;
-    width:55%;
-    height:62%;
-    background: linear-gradient(135deg, #fff, #ffc6d2);
-    opacity:.9;
-  }
-  .fold-left{
-    left:-5%;
-    clip-path: polygon(0 0, 100% 50%, 0 100%);
-  }
-  .fold-right{
-    right:-5%;
-    clip-path: polygon(100% 0, 0 50%, 100% 100%);
-  }
-
-  /* top flap */
-  .flap{
-    position:absolute; left:0; right:0; top:0;
-    height:62%;
-    background: linear-gradient(135deg, #ffeef2, #ffb9c8);
-    clip-path: polygon(0 0, 100% 0, 50% 100%);
-    transform-origin: 50% 0%;
-    transform: rotateX(0deg);
-    transition: transform 900ms cubic-bezier(.2,.9,.2,1);
-    border-bottom:1px solid rgba(0,0,0,.06);
-  }
-
-  /* heart seal */
-  .seal{
-    position:absolute;
-    left:50%; top:52%;
-    width:58px; height:58px;
-    transform: translate(-50%,-50%);
-    border-radius:18px;
-    background: radial-gradient(circle at 30% 30%, #ff7aa2, #ff2d55);
-    box-shadow: 0 16px 30px rgba(255,45,85,.35);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    color:#fff;
-    font-size:26px;
-    transition: transform 500ms ease, opacity 400ms ease;
-  }
-
-  /* letter */
-  .letter{
-    position:absolute;
-    left:50%;
-    bottom:18px;
-    width: calc(100% - 34px);
-    height: 210px;
-    transform: translateX(-50%) translateY(48px);
-    background: var(--card);
-    border-radius:20px;
-    border:1px solid rgba(0,0,0,.08);
-    box-shadow: 0 18px 40px rgba(0,0,0,.14);
-    backdrop-filter: blur(10px);
-    padding:18px 16px;
-    opacity:0;
-    transition: transform 900ms cubic-bezier(.2,.9,.2,1), opacity 600ms ease;
-    overflow:hidden;
-  }
-
-  .letter h2{
-    margin:0 0 6px;
-    font-size:18px;
-    color:var(--ink);
-    letter-spacing:.2px;
-  }
-  .typed{
-    margin:10px 0 0;
-    line-height:1.55;
-    font-size:16px;
-    color:var(--ink);
-    min-height:78px;
-  }
-  .sig{
-    margin-top:10px;
-    font-weight:900;
-    color:#111;
-  }
-
-  .hint{
-    margin-top:10px;
-    font-size:13px;
-    opacity:.7;
-  }
-
-  /* confetti */
-  .confetti{
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    overflow:hidden;
-  }
-  .c{
-    position:absolute;
-    left:50%;
-    top:35%;
-    width:10px; height:14px;
-    border-radius:3px;
-    background: hsl(var(--h), 90%, 60%);
-    transform: translate(-50%,-50%) rotate(var(--r));
-    animation: pop var(--t) ease-out forwards;
-    opacity:.95;
-  }
-  @keyframes pop{
-    0%{ transform: translate(-50%,-50%) translate(0,0) rotate(var(--r)); opacity:1; }
-    100%{ transform: translate(-50%,-50%) translate(var(--dx), var(--dy)) rotate(calc(var(--r) + 240deg)); opacity:0; }
-  }
-
-  /* gallery */
-  .gallery{
-    margin-top:14px;
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap:10px;
-    opacity:0;
-    transform: translateY(12px);
-    transition: opacity 700ms ease, transform 700ms ease;
-  }
-  .gallery.show{
-    opacity:1;
-    transform: translateY(0);
-  }
-  .ph{
-    background:#ffffffcc;
-    border:1px solid rgba(0,0,0,.08);
-    border-radius:18px;
-    overflow:hidden;
-    box-shadow: 0 14px 28px rgba(0,0,0,.12);
-    aspect-ratio: 1 / 1;
-    position:relative;
-  }
-  .ph img{
-    width:100%; height:100%;
-    object-fit: cover;
-    display:block;
-    transform: scale(1.05);
-    filter: saturate(1.05);
-    opacity:0;
-    animation: fadeIn 900ms ease forwards;
-  }
-  .gallery.show .ph:nth-child(1) img{ animation-delay: 80ms; }
-  .gallery.show .ph:nth-child(2) img{ animation-delay: 220ms; }
-  .gallery.show .ph:nth-child(3) img{ animation-delay: 360ms; }
-
-  @keyframes fadeIn{
-    from{ opacity:0; transform: scale(1.12); }
-    to{ opacity:1; transform: scale(1.05); }
-  }
-
-  /* OPEN state animations */
-  .open .flap{ transform: rotateX(175deg); }
-  .open .seal{ transform: translate(-50%,-50%) scale(.75); opacity:0; }
-  .open .letter{
-    transform: translateX(-50%) translateY(-40px);
-    opacity:1;
-  }
-
-  /* small button inside letter */
-  .btn{
-    margin-top:12px;
-    width:100%;
-    border:none;
-    border-radius:14px;
-    padding:12px 14px;
-    font-weight:900;
-    font-size:15px;
-    color:#fff;
-    background: linear-gradient(135deg, var(--accent), #ff7aa2);
-    box-shadow: 0 14px 26px rgba(255,59,107,.32);
-    cursor:pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .btn:active{ transform: scale(.99); }
-
-  /* tap heart pop */
-  .tapHeart{
-    position:fixed;
-    transform: translate(-50%,-50%);
-    font-size:22px;
-    pointer-events:none;
-    transition: transform .8s ease, opacity .8s ease;
-    opacity:1;
-    filter: drop-shadow(0 10px 16px rgba(0,0,0,.18));
-  }
-
-  /* footer */
-  .footer{
-    text-align:center;
-    color:#fff;
-    opacity:.85;
-    margin-top:10px;
-    font-size:13px;
-    text-shadow: 0 8px 18px rgba(0,0,0,.18);
-  }
-</style>
+    .ribbon{
+      position:absolute; top:10px; left:10px;
+      display:flex; align-items:center; gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(8px);
+      color: rgba(255,255,255,.88);
+      font-size: 12.5px;
+    }
+    .ribbon .mini{
+      width:14px; height:14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      transform: rotate(45deg);
+      border-radius: 4px;
+      position:relative;
+    }
+    .ribbon .mini::before,
+    .ribbon .mini::after{
+      content:"";
+      position:absolute;
+      width:14px; height:14px;
+      background: inherit;
+      border-radius: 999px;
+      top:-7px; left:0;
+    }
+    .ribbon .mini::after{ top:0; left:-7px; }
+  </style>
 </head>
-
 <body>
   <div class="glow"></div>
-  <div class="confetti" id="confetti"></div>
+  <canvas id="hearts" aria-hidden="true"></canvas>
 
-  <div class="stage">
-    <h1 class="title">💌 Надаас чамд</h1>
+  <div class="wrap">
+    <main class="card" role="main">
+      <div class="ribbon"><span class="mini" aria-hidden="true"></span><span>Swipe/гүйлгээд үзээрэй</span></div>
 
-    <div class="envelopeWrap">
-      <div class="envelope" id="env" aria-label="Valentine envelope">
-        <div class="env-back">
-          <div class="fold-left"></div>
-          <div class="fold-right"></div>
-          <div class="pocket"></div>
-          <div class="flap"></div>
-          <div class="seal">💗</div>
-
-          <div class="letter" id="letter">
-            <h2>🌹 Валентины мэнд</h2>
-            <div class="typed" id="typed"></div>
-            <div class="sig" id="sig"></div>
-            <button class="btn" id="showPicsBtn">📷 Зургуудыг үзэх</button>
-            <div class="hint">Дугтуйн дээр дарж нээ, дараа нь зургууд гарна.</div>
-          </div>
+      <section class="hero">
+        <h1 class="title">Валентины мэндчилгээ</h1>
+        <p class="subtitle">Доторх товчийг дараад хажуу тийшээ гүйлгэж уншаарай. ❤️</p>
+        <div class="btnRow">
+          <button id="openBtn" class="btn" type="button">Хайрт чамдаа</button>
         </div>
-      </div>
-    </div>
+        <div id="hint" class="hint">Одоо хажуу тийшээ гүйлгээд (swipe) дараагийн хуудсуудыг үзээрэй. ✨</div>
+      </section>
 
-    <div class="gallery" id="gallery">
-      <!-- Зурагны файлын нэрийг repo дээр upload хийсэнтэйгээ тааруул -->
-      <div class="ph"><img src="img1.jpg" alt="photo 1"></div>
-      <div class="ph"><img src="img2.jpg" alt="photo 2"></div>
-      <div class="ph"><img src="img3.jpg" alt="photo 3"></div>
-    </div>
+      <section id="sliderWrap" class="sliderWrap">
+        <div id="slider" class="slider" tabindex="0" aria-label="Мэндчилгээний хуудсууд">
+          <article class="slide" data-index="0">
+            <div class="media">
+              <img src="IMG_20260213_224340_259.jpg" alt="Зураг 1">
+            </div>
+            <div class="caption"><strong>Хайрт Т. Баасанжав танд</strong></div>
+          </article>
 
-    <div class="footer">✨ Дугтуй нээгдээд мэндчилгээ гарч, дараа нь 3 зураг гарна.</div>
+          <article class="slide" data-index="1">
+            <div class="media">
+              <img src="IMG_20260213_224423_883.jpg" alt="Зураг 2">
+            </div>
+            <div class="caption">3 жил урт хугацаа мэт боловч хамтдаа байхад нүд ирмэх зуур өнгөрсөн байна</div>
+          </article>
+
+          <article class="slide" data-index="2">
+            <div class="media">
+              <img src="IMG_20260212_183500.jpg" alt="Зураг 3">
+            </div>
+            <div class="caption">Цаашдаа ч мөн үргэлж хамтдаа байх болно</div>
+          </article>
+
+          <article class="slide" data-index="3">
+            <div class="media" style="background:
+              radial-gradient(700px 360px at 20% 20%, rgba(255,77,141,.35), transparent 60%),
+              radial-gradient(650px 340px at 80% 70%, rgba(255,134,178,.22), transparent 62%),
+              linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.04));">
+              <svg viewBox="0 0 64 64" width="160" height="160" fill="none" aria-hidden="true"
+                   style="filter: drop-shadow(0 18px 25px rgba(0,0,0,.35)); opacity:.95; animation: pulse 1.8s ease-in-out infinite;">
+                <path d="M32 56s-18-10.8-24.6-22.7C1.8 22.1 8.6 10 21 12.2c5.5 1 9.1 5.6 11 9.1 1.9-3.5 5.5-8.1 11-9.1C55.4 10 62.2 22.1 56.6 33.3 50 45.2 32 56 32 56Z"
+                  fill="url(#g4)"/>
+                <defs>
+                  <linearGradient id="g4" x1="12" y1="12" x2="52" y2="56" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#ff86b2"/><stop offset="1" stop-color="#ff4d8d"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="caption">Дандаа хайртай шүү үнсэе. Хүндэтгэсэн: Таны хайрт залуу Г. Мөнх-Од</div>
+          </article>
+        </div>
+
+        <div class="progress" aria-hidden="true">
+          <span class="dot active" id="dot0"></span>
+          <span class="dot" id="dot1"></span>
+          <span class="dot" id="dot2"></span>
+          <span class="dot" id="dot3"></span>
+        </div>
+      </section>
+
+      <div class="tiny">❤️ Валентины өдрийн халуун дулаан мэдрэмжийг чамд зориуллаа.</div>
+    </main>
   </div>
 
-<script>
-  // ===== floating hearts background =====
-  const heartEmojis = ["💗","💖","💘","❤️","💞","💝"];
-  function spawnBgHeart(){
-    const h = document.createElement("div");
-    h.className = "h";
-    h.textContent = heartEmojis[Math.floor(Math.random()*heartEmojis.length)];
-    h.style.setProperty("--x", (Math.random()*100) + "vw");
-    h.style.setProperty("--s", (16 + Math.random()*20) + "px");
-    h.style.setProperty("--d", (6 + Math.random()*7) + "s");
-    h.style.setProperty("--o", (0.30 + Math.random()*0.45));
-    document.body.appendChild(h);
-    setTimeout(()=>h.remove(), 14000);
-  }
-  for(let i=0;i<8;i++) setTimeout(spawnBgHeart, i*240);
-  setInterval(spawnBgHeart, 520);
+  <script>
+    const openBtn = document.getElementById('openBtn');
+    const sliderWrap = document.getElementById('sliderWrap');
+    const hint = document.getElementById('hint');
+    const slider = document.getElementById('slider');
+    const dots = [0,1,2,3].map(i => document.getElementById('dot'+i));
 
-  // ===== tap heart pop =====
-  document.addEventListener("pointerdown", (e)=>{
-    // don't block button clicks etc
-    const t = e.target;
-    if (t && (t.tagName === "BUTTON" || t.closest("button"))) return;
-
-    const th = document.createElement("div");
-    th.className = "tapHeart";
-    th.textContent = "💗";
-    th.style.left = e.clientX + "px";
-    th.style.top  = e.clientY + "px";
-    document.body.appendChild(th);
-
-    requestAnimationFrame(()=>{
-      th.style.opacity = 0;
-      th.style.transform = "translate(-50%,-50%) translateY(-80px) scale(1.4)";
+    openBtn.addEventListener('click', () => {
+      sliderWrap.classList.add('show','fadeIn');
+      hint.classList.add('show');
+      sliderWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => slider.children[0].scrollIntoView({behavior:'smooth', inline:'center'}), 200);
+      openBtn.disabled = true;
+      openBtn.style.opacity = .85;
+      openBtn.textContent = "Нээгдлээ ❤️";
     });
-    setTimeout(()=>th.remove(), 850);
-  });
 
-  // ===== confetti burst =====
-  const confettiWrap = document.getElementById("confetti");
-  function burstConfetti(){
-    const count = 46;
-    for(let i=0;i<count;i++){
-      const c = document.createElement("div");
-      c.className = "c";
-      const hue = Math.floor(Math.random()*360);
-      const r = Math.floor(Math.random()*360) + "deg";
-      const t = (700 + Math.random()*850) + "ms";
-      const dx = (Math.random()*2 - 1) * (170 + Math.random()*150);
-      const dy = (Math.random()*2 - 1) * (200 + Math.random()*170);
-
-      c.style.setProperty("--h", hue);
-      c.style.setProperty("--r", r);
-      c.style.setProperty("--t", t);
-      c.style.setProperty("--dx", dx + "px");
-      c.style.setProperty("--dy", dy + "px");
-
-      confettiWrap.appendChild(c);
-      setTimeout(()=>c.remove(), 1800);
+    function updateDots() {
+      const slides = Array.from(slider.querySelectorAll('.slide'));
+      const centerX = slider.scrollLeft + slider.clientWidth / 2;
+      let bestIndex = 0, bestDist = Infinity;
+      slides.forEach((s, idx) => {
+        const x = s.offsetLeft + s.clientWidth / 2;
+        const d = Math.abs(x - centerX);
+        if (d < bestDist) { bestDist = d; bestIndex = idx; }
+      });
+      dots.forEach((d,i) => d.classList.toggle('active', i === bestIndex));
     }
-  }
+    slider.addEventListener('scroll', () => window.requestAnimationFrame(updateDots));
 
-  // ===== typewriter =====
-  const typedEl = document.getElementById("typed");
-  const sigEl = document.getElementById("sig");
-  const env = document.getElementById("env");
-  const letter = document.getElementById("letter");
-  const showPicsBtn = document.getElementById("showPicsBtn");
-  const gallery = document.getElementById("gallery");
+    const canvas = document.getElementById('hearts');
+    const ctx = canvas.getContext('2d', { alpha:true });
 
-  const line1 = "Т.Баасанжав танд гэгээн хайрын Валентины мэнд хүргэе. 💝";
-  const line2a = "Хүндэтгэсэн таны хайрт залуу";
-  const line2b = "Г.Мөнх-Од.";
+    function resize() {
+      canvas.width = Math.floor(window.innerWidth * devicePixelRatio);
+      canvas.height = Math.floor(window.innerHeight * devicePixelRatio);
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+      ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    }
+    window.addEventListener('resize', resize);
+    resize();
 
-  function typeText(text, el, speed=24){
-    return new Promise(resolve=>{
-      el.textContent = "";
-      let i = 0;
-      const timer = setInterval(()=>{
-        el.textContent += text[i];
-        i++;
-        if(i >= text.length){
-          clearInterval(timer);
-          resolve();
+    const hearts = [];
+    const MAX = Math.min(70, Math.floor(window.innerWidth / 18));
+    const rand = (min, max) => Math.random()*(max-min)+min;
+
+    function spawnHeart() {
+      hearts.push({
+        x: rand(0, window.innerWidth),
+        y: rand(-20, -200),
+        size: rand(8, 18),
+        speed: rand(0.8, 2.2),
+        drift: rand(-0.6, 0.6),
+        rot: rand(-0.6, 0.6),
+        rotSpeed: rand(-0.02, 0.02),
+        alpha: rand(0.35, 0.85)
+      });
+      if (hearts.length > MAX) hearts.shift();
+    }
+
+    function drawHeart(x, y, s, rot, alpha) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rot);
+      ctx.globalAlpha = alpha;
+      const g = ctx.createLinearGradient(-s, -s, s, s);
+      g.addColorStop(0, 'rgba(255,77,141,1)');
+      g.addColorStop(1, 'rgba(255,134,178,1)');
+      ctx.fillStyle = g;
+
+      ctx.beginPath();
+      const top = s * 0.35;
+      ctx.moveTo(0, top);
+      ctx.bezierCurveTo(0, 0, -s, 0, -s, top);
+      ctx.bezierCurveTo(-s, s, 0, s*1.25, 0, s*1.55);
+      ctx.bezierCurveTo(0, s*1.25, s, s, s, top);
+      ctx.bezierCurveTo(s, 0, 0, 0, 0, top);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    for(let i=0;i<Math.floor(MAX*0.7);i++) spawnHeart();
+
+    function tick() {
+      ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
+      if (Math.random() < 0.35) spawnHeart();
+      for (const h of hearts) {
+        h.y += h.speed;
+        h.x += h.drift;
+        h.rot += h.rotSpeed;
+        if (h.y > window.innerHeight + 40) {
+          h.y = rand(-80, -220);
+          h.x = rand(0, window.innerWidth);
+          h.size = rand(8, 18);
+          h.speed = rand(0.8, 2.2);
+          h.drift = rand(-0.6, 0.6);
+          h.alpha = rand(0.35, 0.85);
         }
-      }, speed);
-    });
-  }
-
-  let opened = false;
-  env.addEventListener("click", async ()=>{
-    if(opened) return;
-    opened = true;
-
-    env.classList.add("open");
-    burstConfetti();
-    if(navigator.vibrate) navigator.vibrate(50);
-
-    await typeText(line1, typedEl, 22);
-    sigEl.innerHTML = "<br><b>" + line2a + "<br>" + line2b + "</b>";
-  });
-
-  // show 3 photos
-  showPicsBtn.addEventListener("click", ()=>{
-    gallery.classList.add("show");
-    burstConfetti();
-    if(navigator.vibrate) navigator.vibrate(35);
-    // small scroll hint on some browsers
-    gallery.scrollIntoView({behavior:"smooth", block:"center"});
-  });
-</script>
+        drawHeart(h.x, h.y, h.size, h.rot, h.alpha);
+      }
+      requestAnimationFrame(tick);
+    }
+    tick();
+  </script>
 </body>
   </html>
