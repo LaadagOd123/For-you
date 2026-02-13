@@ -1,349 +1,284 @@
 <!doctype html>
 <html lang="mn">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Валентины мэндчилгээ</title>
-  <style>
-    :root{
-      --bg1:#0b0610; --bg2:#16081d;
-      --text:#fff;
-      --accent:#ff4d8d; --accent2:#ff86b2;
-      --shadow: 0 18px 60px rgba(0,0,0,.55);
-      --radius: 22px;
-    }
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(1200px 600px at 20% 15%, rgba(255,77,141,.22), transparent 55%),
-        radial-gradient(900px 500px at 85% 35%, rgba(255,134,178,.18), transparent 58%),
-        linear-gradient(160deg, var(--bg1), var(--bg2));
-      overflow-x:hidden;
-    }
-    .glow{
-      position:fixed; inset:-40px; z-index:-3;
-      background:
-        radial-gradient(500px 260px at 10% 20%, rgba(255,77,141,.14), transparent 65%),
-        radial-gradient(520px 280px at 85% 70%, rgba(255,134,178,.12), transparent 62%),
-        radial-gradient(420px 240px at 55% 15%, rgba(255,255,255,.06), transparent 60%);
-      filter: blur(12px);
-      animation: floatGlow 9s ease-in-out infinite alternate;
-    }
-    @keyframes floatGlow{
-      from{ transform: translate3d(0,0,0) scale(1); opacity:.85; }
-      to  { transform: translate3d(0,-10px,0) scale(1.03); opacity:1; }
-    }
-    canvas#hearts{ position:fixed; inset:0; z-index:-2; pointer-events:none; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Валентины мэндчилгээ</title>
 
-    .wrap{ min-height:100%; display:flex; align-items:center; justify-content:center; padding:24px; }
-    .card{
-      width:min(980px, 100%);
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
-      border: 1px solid rgba(255,255,255,.14);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      position:relative;
-    }
+<style>
+:root{
+ --accent:#ff4d8d;
+ --accent2:#ff86b2;
+}
 
-    .hero{ padding: 34px 22px 18px; text-align:center; }
-    .title{
-      margin:0;
-      font-size: clamp(26px, 3.7vw, 44px);
-      letter-spacing: .3px;
-      line-height:1.15;
-      text-shadow: 0 10px 30px rgba(0,0,0,.35);
-    }
+body{
+ margin:0;
+ font-family:sans-serif;
+ color:#fff;
+ background:
+ radial-gradient(circle at 20% 20%, #44102a, transparent 40%),
+ radial-gradient(circle at 80% 80%, #2b0a35, transparent 40%),
+ #120514;
+ overflow-x:hidden;
+}
 
-    .btnRow{ display:flex; justify-content:center; gap:10px; margin-top: 16px; flex-wrap:wrap; }
-    .btn{
-      appearance:none; border:0; cursor:pointer;
-      padding: 13px 18px; border-radius: 999px;
-      font-weight: 700; font-size: 15px;
-      color:#1a0610;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      box-shadow: 0 14px 35px rgba(255,77,141,.25);
-      transition: transform .12s ease, filter .2s ease;
-      user-select:none;
-    }
-    .btn:hover{ filter: brightness(1.02); }
-    .btn:active{ transform: translateY(1px) scale(.99); }
+/* floating hearts */
+canvas{position:fixed;inset:0;z-index:-1}
 
-    .btnSmall{
-      appearance:none;
-      cursor:pointer;
-      padding: 9px 12px;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 13px;
-      color: rgba(255,255,255,.92);
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.18);
-      box-shadow: 0 10px 24px rgba(0,0,0,.22);
-      transition: transform .12s ease, filter .2s ease, opacity .2s ease;
-      user-select:none;
-    }
-    .btnSmall:hover{ filter: brightness(1.05); }
-    .btnSmall:active{ transform: translateY(1px) scale(.99); }
+/* card */
+.wrap{
+ min-height:100vh;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:20px;
+}
 
-    .sliderWrap{
-      border-top: 1px solid rgba(255,255,255,.10);
-      background: linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.22));
-      padding: 16px 16px 18px;
-      display:none;
-    }
-    .sliderWrap.show{ display:block; }
-    .slider{
-      display:flex; gap:14px;
-      overflow-x:auto;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      padding: 6px 4px 14px;
-    }
-    .slider::-webkit-scrollbar{ height:10px; }
-    .slider::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.18); border-radius:999px; }
+.card{
+ width:100%;
+ max-width:950px;
+ border-radius:24px;
+ backdrop-filter:blur(20px);
+ background:rgba(255,255,255,0.06);
+ border:1px solid rgba(255,255,255,0.15);
+ box-shadow:0 30px 80px rgba(0,0,0,.6);
+ overflow:hidden;
+ animation:fadeIn .8s ease;
+}
 
-    .slide{
-      flex: 0 0 86%;
-      scroll-snap-align: center;
-      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: 18px;
-      box-shadow: 0 16px 40px rgba(0,0,0,.35);
-      overflow:hidden;
-    }
-    @media (min-width: 860px){ .slide{ flex-basis: 58%; } }
+@keyframes fadeIn{
+ from{opacity:0;transform:scale(.9)}
+ to{opacity:1;transform:scale(1)}
+}
 
-    .media{
-      height: clamp(240px, 45vw, 380px);
-      background: rgba(255,255,255,.05);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-    .media img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
-    .caption{
-      padding: 16px 16px 18px;
-      font-size: clamp(16px, 2.6vw, 18px);
-      line-height: 1.55;
-      color: rgba(255,255,255,.94);
-    }
-    .caption strong{ color:#fff; }
+.hero{text-align:center;padding:30px}
 
-    .progress{ display:flex; justify-content:center; gap: 8px; padding: 6px 0 0; opacity:.9; }
-    .dot{
-      width:8px; height:8px;
-      border-radius:999px;
-      background: rgba(255,255,255,.25);
-      border:1px solid rgba(255,255,255,.18);
-      transition: transform .15s ease, background .15s ease;
-    }
-    .dot.active{
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      transform: scale(1.25);
-    }
+.title{
+ font-size:34px;
+ margin:0;
+ letter-spacing:.5px;
+}
 
-    .fadeIn{ animation: fadeIn .55s ease both; }
-    @keyframes fadeIn{ from{ opacity:0; transform: translateY(10px); } to{ opacity:1; transform: translateY(0); } }
+.btn{
+ border:0;
+ padding:14px 24px;
+ border-radius:999px;
+ font-weight:bold;
+ cursor:pointer;
+ background:linear-gradient(135deg,var(--accent),var(--accent2));
+ color:#1a0610;
+ box-shadow:0 20px 40px rgba(255,77,141,.35);
+ transition:.2s;
+}
+.btn:active{transform:scale(.95)}
 
-    .hidden{ display:none !important; }
-  </style>
+.sliderWrap{display:none;padding:16px}
+.sliderWrap.show{display:block}
+
+.slider{
+ display:flex;
+ gap:16px;
+ overflow-x:auto;
+ scroll-snap-type:x mandatory;
+}
+
+.slide{
+ flex:0 0 85%;
+ scroll-snap-align:center;
+ border-radius:20px;
+ overflow:hidden;
+ background:rgba(255,255,255,.08);
+ border:1px solid rgba(255,255,255,.15);
+ box-shadow:0 20px 50px rgba(0,0,0,.4);
+ transition:.4s;
+ transform:scale(.92);
+}
+.slide.active{
+ transform:scale(1);
+}
+
+.media img{
+ width:100%;
+ height:360px;
+ object-fit:cover;
+}
+
+.caption{
+ padding:16px;
+ font-size:18px;
+}
+
+.progress{
+ display:flex;
+ justify-content:center;
+ gap:8px;
+ margin-top:10px;
+}
+.dot{
+ width:8px;height:8px;border-radius:50%;
+ background:#666;
+}
+.dot.active{
+ background:linear-gradient(135deg,var(--accent),var(--accent2));
+ transform:scale(1.4);
+}
+
+/* floating back button */
+.backBtn{
+ position:absolute;
+ top:16px;
+ left:50%;
+ transform:translateX(-50%);
+ border:1px solid rgba(255,255,255,.2);
+ background:rgba(255,255,255,.12);
+ backdrop-filter:blur(15px);
+ color:#fff;
+ border-radius:999px;
+ padding:10px 18px;
+ cursor:pointer;
+ box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+
+/* final heart pulse */
+.pulse{
+ animation:pulse 1.5s infinite;
+}
+@keyframes pulse{
+ 0%{transform:scale(1)}
+ 50%{transform:scale(1.08)}
+ 100%{transform:scale(1)}
+}
+</style>
 </head>
+
 <body>
-  <div class="glow"></div>
-  <canvas id="hearts" aria-hidden="true"></canvas>
 
-  <div class="wrap">
-    <main class="card" role="main">
+<canvas id="c"></canvas>
 
-      <section id="hero" class="hero">
-        <h1 class="title">Валентины мэндчилгээ</h1>
-        <div class="btnRow">
-          <button id="openBtn" class="btn" type="button">Хайрт чамдаа</button>
-        </div>
-      </section>
+<div class="wrap">
+<main class="card">
 
-      <section id="sliderWrap" class="sliderWrap">
-        <div class="btnRow" style="margin-top:0; margin-bottom:12px;">
-          <button id="backBtn" class="btnSmall" type="button">⟵ Буцах</button>
-        </div>
+<section id="hero" class="hero">
+<h1 class="title">Валентины мэндчилгээ</h1>
+<br>
+<button id="openBtn" class="btn">Хайрт чамдаа</button>
+</section>
 
-        <div id="slider" class="slider" tabindex="0" aria-label="Мэндчилгээний хуудсууд">
-          <article class="slide" data-index="0">
-            <div class="media">
-              <img src="IMG_20260213_224340_259.jpg" alt="Зураг 1">
-            </div>
-            <div class="caption"><strong>Хайрт Т. Баасанжав танд</strong></div>
-          </article>
+<section id="sliderWrap" class="sliderWrap">
 
-          <article class="slide" data-index="1">
-            <div class="media">
-              <img src="IMG_20260213_224423_883.jpg" alt="Зураг 2">
-            </div>
-            <div class="caption">3 жил урт хугацаа мэт боловч хамтдаа байхад нүд ирмэх зуур өнгөрсөн байна</div>
-          </article>
+<button id="backBtn" class="backBtn">← Буцах</button>
 
-          <article class="slide" data-index="2">
-            <div class="media">
-              <img src="IMG_20260212_183500.jpg" alt="Зураг 3">
-            </div>
-            <div class="caption">Цаашдаа ч мөн үргэлж хамтдаа байх болно</div>
-          </article>
+<div id="slider" class="slider">
 
-          <article class="slide" data-index="3">
-            <div class="media" style="background:
-              radial-gradient(700px 360px at 20% 20%, rgba(255,77,141,.35), transparent 60%),
-              radial-gradient(650px 340px at 80% 70%, rgba(255,134,178,.22), transparent 62%),
-              linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.04));">
-              <svg viewBox="0 0 64 64" width="160" height="160" fill="none" aria-hidden="true"
-                   style="filter: drop-shadow(0 18px 25px rgba(0,0,0,.35)); opacity:.95;">
-                <path d="M32 56s-18-10.8-24.6-22.7C1.8 22.1 8.6 10 21 12.2c5.5 1 9.1 5.6 11 9.1 1.9-3.5 5.5-8.1 11-9.1C55.4 10 62.2 22.1 56.6 33.3 50 45.2 32 56 32 56Z"
-                  fill="url(#g4)"/>
-                <defs>
-                  <linearGradient id="g4" x1="12" y1="12" x2="52" y2="56" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#ff86b2"/><stop offset="1" stop-color="#ff4d8d"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-            </div>
-            <div class="caption">Дандаа хайртай шүү үнсэе. Хүндэтгэсэн: Таны хайрт залуу Г. Мөнх-Од</div>
-          </article>
-        </div>
+<div class="slide">
+<div class="media">
+<img src="IMG_20260213_224340_259.jpg">
+</div>
+<div class="caption"><b>Хайрт Т. Баасанжав танд</b></div>
+</div>
 
-        <div class="progress" aria-hidden="true">
-          <span class="dot active" id="dot0"></span>
-          <span class="dot" id="dot1"></span>
-          <span class="dot" id="dot2"></span>
-          <span class="dot" id="dot3"></span>
-        </div>
-      </section>
+<div class="slide">
+<div class="media">
+<img src="IMG_20260213_224423_883.jpg">
+</div>
+<div class="caption">3 жил урт хугацаа мэт боловч хамтдаа байхад нүд ирмэх зуур өнгөрсөн байна</div>
+</div>
 
-    </main>
-  </div>
+<div class="slide">
+<div class="media">
+<img src="IMG_20260212_183500.jpg">
+</div>
+<div class="caption">Цаашдаа ч мөн үргэлж хамтдаа байх болно</div>
+</div>
 
-  <script>
-    const openBtn = document.getElementById('openBtn');
-    const backBtn = document.getElementById('backBtn');
-    const hero = document.getElementById('hero');
-    const sliderWrap = document.getElementById('sliderWrap');
-    const slider = document.getElementById('slider');
-    const dots = [0,1,2,3].map(i => document.getElementById('dot'+i));
+<div class="slide">
+<div class="media pulse" style="display:flex;align-items:center;justify-content:center;background:#ff4d8d33">
+❤️
+</div>
+<div class="caption">Дандаа хайртай шүү үнсэе. Хүндэтгэсэн: Таны хайрт залуу Г. Мөнх-Од</div>
+</div>
 
-    openBtn.addEventListener('click', () => {
-      hero.classList.add('hidden');
-      sliderWrap.classList.add('show','fadeIn');
-      setTimeout(() => slider.children[0].scrollIntoView({behavior:'smooth', inline:'center'}), 150);
-    });
+</div>
 
-    backBtn.addEventListener('click', () => {
-      sliderWrap.classList.remove('show','fadeIn');
-      hero.classList.remove('hidden');
-      openBtn.blur();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+<div class="progress">
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+</div>
 
-    function updateDots() {
-      const slides = Array.from(slider.querySelectorAll('.slide'));
-      const centerX = slider.scrollLeft + slider.clientWidth / 2;
-      let bestIndex = 0, bestDist = Infinity;
+</section>
 
-      slides.forEach((s, idx) => {
-        const x = s.offsetLeft + s.clientWidth / 2;
-        const d = Math.abs(x - centerX);
-        if (d < bestDist) { bestDist = d; bestIndex = idx; }
-      });
+</main>
+</div>
 
-      dots.forEach((d,i) => d.classList.toggle('active', i === bestIndex));
-    }
-    slider.addEventListener('scroll', () => window.requestAnimationFrame(updateDots));
+<script>
+const openBtn=document.getElementById('openBtn');
+const backBtn=document.getElementById('backBtn');
+const hero=document.getElementById('hero');
+const sliderWrap=document.getElementById('sliderWrap');
+const slider=document.getElementById('slider');
+const slides=[...document.querySelectorAll('.slide')];
+const dots=[...document.querySelectorAll('.dot')];
 
-    const canvas = document.getElementById('hearts');
-    const ctx = canvas.getContext('2d', { alpha:true });
+openBtn.onclick=()=>{
+ hero.style.display="none";
+ sliderWrap.classList.add('show');
+ update();
+}
 
-    function resize() {
-      canvas.width = Math.floor(window.innerWidth * devicePixelRatio);
-      canvas.height = Math.floor(window.innerHeight * devicePixelRatio);
-      canvas.style.width = window.innerWidth + 'px';
-      canvas.style.height = window.innerHeight + 'px';
-      ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
-    }
-    window.addEventListener('resize', resize);
-    resize();
+backBtn.onclick=()=>{
+ sliderWrap.classList.remove('show');
+ hero.style.display="block";
+ window.scrollTo({top:0,behavior:'smooth'});
+}
 
-    const hearts = [];
-    const MAX = Math.min(70, Math.floor(window.innerWidth / 18));
-    const rand = (min, max) => Math.random()*(max-min)+min;
+function update(){
+ const center=slider.scrollLeft+slider.clientWidth/2;
+ let best=0,dist=999999;
 
-    function spawnHeart() {
-      hearts.push({
-        x: rand(0, window.innerWidth),
-        y: rand(-20, -200),
-        size: rand(8, 18),
-        speed: rand(0.8, 2.2),
-        drift: rand(-0.6, 0.6),
-        rot: rand(-0.6, 0.6),
-        rotSpeed: rand(-0.02, 0.02),
-        alpha: rand(0.35, 0.85)
-      });
-      if (hearts.length > MAX) hearts.shift();
-    }
+ slides.forEach((s,i)=>{
+  const x=s.offsetLeft+s.clientWidth/2;
+  const d=Math.abs(center-x);
+  if(d<dist){dist=d;best=i;}
+ });
 
-    function drawHeart(x, y, s, rot, alpha) {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(rot);
-      ctx.globalAlpha = alpha;
+ slides.forEach((s,i)=>s.classList.toggle('active',i===best));
+ dots.forEach((d,i)=>d.classList.toggle('active',i===best));
+}
 
-      const g = ctx.createLinearGradient(-s, -s, s, s);
-      g.addColorStop(0, 'rgba(255,77,141,1)');
-      g.addColorStop(1, 'rgba(255,134,178,1)');
-      ctx.fillStyle = g;
+slider.addEventListener('scroll',()=>requestAnimationFrame(update));
+update();
 
-      ctx.beginPath();
-      const top = s * 0.35;
-      ctx.moveTo(0, top);
-      ctx.bezierCurveTo(0, 0, -s, 0, -s, top);
-      ctx.bezierCurveTo(-s, s, 0, s*1.25, 0, s*1.55);
-      ctx.bezierCurveTo(0, s*1.25, s, s, s, top);
-      ctx.bezierCurveTo(s, 0, 0, 0, 0, top);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-    }
+/* hearts background */
+const c=document.getElementById("c");
+const ctx=c.getContext("2d");
+function resize(){
+ c.width=innerWidth;
+ c.height=innerHeight;
+}
+resize();
+onresize=resize;
 
-    for(let i=0;i<Math.floor(MAX*0.7);i++) spawnHeart();
+const hearts=[];
+for(let i=0;i<40;i++){
+ hearts.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,s:Math.random()*6+4});
+}
 
-    function tick() {
-      ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
-      if (Math.random() < 0.35) spawnHeart();
+function draw(){
+ ctx.clearRect(0,0,c.width,c.height);
+ ctx.fillStyle="#ff86b2aa";
+ hearts.forEach(h=>{
+  h.y+=0.3;
+  if(h.y>innerHeight)h.y=-10;
+  ctx.beginPath();
+  ctx.arc(h.x,h.y,h.s,0,Math.PI*2);
+  ctx.fill();
+ });
+ requestAnimationFrame(draw);
+}
+draw();
+</script>
 
-      for (const h of hearts) {
-        h.y += h.speed;
-        h.x += h.drift;
-        h.rot += h.rotSpeed;
-
-        if (h.y > window.innerHeight + 40) {
-          h.y = rand(-80, -220);
-          h.x = rand(0, window.innerWidth);
-          h.size = rand(8, 18);
-          h.speed = rand(0.8, 2.2);
-          h.drift = rand(-0.6, 0.6);
-          h.alpha = rand(0.35, 0.85);
-        }
-        drawHeart(h.x, h.y, h.size, h.rot, h.alpha);
-      }
-      requestAnimationFrame(tick);
-    }
-    tick();
-  </script>
 </body>
 </html>
