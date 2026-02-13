@@ -3,138 +3,224 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Valentine 💖</title>
+<title>For You 💌</title>
 
 <style>
   :root{
     --bg1:#ff9a9e;
     --bg2:#fad0c4;
-    --card:#ffffffee;
     --accent:#ff3b6b;
-    --text:#1f1f1f;
+    --card:#ffffffee;
+    --ink:#1e1e1e;
   }
 
-  *{box-sizing:border-box;}
+  *{box-sizing:border-box}
   body{
     margin:0;
     height:100vh;
+    overflow:hidden;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
     display:flex;
     justify-content:center;
     align-items:center;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    overflow:hidden;
-    background: linear-gradient(135deg, var(--bg1), var(--bg2));
   }
 
-  /* Moving glow background */
+  /* dreamy moving glow */
   .glow{
-    position:absolute;
-    inset:-40%;
+    position:fixed; inset:-40%;
     background:
       radial-gradient(circle at 30% 30%, #ffffff70, transparent 55%),
       radial-gradient(circle at 70% 70%, #ffffff55, transparent 55%),
-      radial-gradient(circle at 50% 80%, #fff3, transparent 60%);
-    filter: blur(28px);
-    animation: drift 9s ease-in-out infinite alternate;
+      radial-gradient(circle at 45% 85%, #fff3, transparent 60%);
+    filter: blur(30px);
+    animation: drift 10s ease-in-out infinite alternate;
     pointer-events:none;
   }
   @keyframes drift{
-    from{ transform: translate(-2%, -2%) scale(1.05); }
-    to{ transform: translate(2%, 2%) scale(1.12); }
+    from{ transform: translate(-2%,-2%) scale(1.05); }
+    to{ transform: translate(2%,2%) scale(1.12); }
   }
 
-  .card{
-    position:relative;
-    width:min(92vw, 440px);
-    background:var(--card);
-    border:1px solid #ffffff90;
-    border-radius:26px;
-    padding:22px;
-    text-align:center;
-    box-shadow: 0 16px 45px rgba(0,0,0,.22);
-    backdrop-filter: blur(10px);
-    transform: translateY(0);
-    transition: transform .45s ease, box-shadow .45s ease;
-  }
-
-  .btn{
-    width:100%;
-    border:none;
-    border-radius:16px;
-    padding:14px 16px;
-    font-size:16px;
-    font-weight:900;
-    color:#fff;
-    background: linear-gradient(135deg, var(--accent), #ff7aa2);
-    box-shadow: 0 14px 28px rgba(255,59,107,.35);
-    cursor:pointer;
-    -webkit-tap-highlight-color: transparent;
-    transition: transform .08s ease, filter .2s ease;
-  }
-  .btn:active{ transform: scale(.98); }
-  .btn:hover{ filter: brightness(1.03); }
-
-  .msg{
-    margin-top:16px;
-    padding:18px 14px;
-    border-radius:18px;
-    background:#fff;
-    border:1px solid rgba(0,0,0,.08);
-    box-shadow: 0 12px 28px rgba(0,0,0,.10);
-    display:none;
-  }
-  .msg.show{
-    display:block;
-    animation: popIn .55s cubic-bezier(.2,.9,.2,1) both;
-  }
-  @keyframes popIn{
-    0%{ transform: translateY(14px) scale(.98); opacity:0; }
-    100%{ transform: translateY(0) scale(1); opacity:1; }
-  }
-
-  /* Typewriter look */
-  .typed{
-    font-size:18px;
-    line-height:1.55;
-    color:var(--text);
-    min-height: 60px;
-  }
-  .sig{
-    margin-top:10px;
-    font-weight:900;
-  }
-
-  /* Floating hearts */
+  /* floating hearts background */
   .h{
-    position:absolute;
+    position:fixed;
     bottom:-10vh;
     left:var(--x);
     font-size:var(--s);
     opacity:var(--o);
-    filter: drop-shadow(0 8px 12px rgba(0,0,0,.18));
+    filter: drop-shadow(0 10px 16px rgba(0,0,0,.18));
     animation: floatUp var(--d) linear infinite;
     pointer-events:none;
+    transform: translateZ(0);
   }
   @keyframes floatUp{
     to{ transform: translateY(-120vh) rotate(360deg); }
   }
 
-  /* Confetti */
-  .confetti{
-    position:absolute;
-    inset:0;
+  /* main stage */
+  .stage{
+    width:min(92vw, 520px);
+    padding:16px;
+    position:relative;
+  }
+
+  .title{
+    text-align:center;
+    margin:0 0 14px;
+    color:#fff;
+    font-weight:900;
+    letter-spacing:.2px;
+    text-shadow: 0 8px 18px rgba(0,0,0,.18);
+    font-size: clamp(18px, 4.4vw, 22px);
+  }
+
+  /* envelope block */
+  .envelopeWrap{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin: 0 auto;
+    position:relative;
+  }
+
+  /* envelope size responsive */
+  .envelope{
+    width:min(88vw, 420px);
+    height:260px;
+    position:relative;
+    cursor:pointer;
+    -webkit-tap-highlight-color: transparent;
+    transform: translateY(0);
+    transition: transform .25s ease;
+  }
+  .envelope:active{ transform: translateY(2px) scale(.995); }
+
+  /* envelope base */
+  .env-back{
+    position:absolute; inset:0;
+    background: linear-gradient(180deg, #fff, #ffe9ee);
+    border-radius:24px;
+    box-shadow: 0 18px 55px rgba(0,0,0,.22);
+    border:1px solid rgba(255,255,255,.75);
     overflow:hidden;
+  }
+
+  /* bottom pocket */
+  .pocket{
+    position:absolute; left:0; right:0; bottom:0;
+    height:62%;
+    background: linear-gradient(135deg, #fff, #ffd3dc);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    border-top:1px solid rgba(0,0,0,.06);
+  }
+
+  /* left + right folds */
+  .fold-left, .fold-right{
+    position:absolute;
+    top:38%;
+    width:55%;
+    height:62%;
+    background: linear-gradient(135deg, #fff, #ffc6d2);
+    opacity:.9;
+  }
+  .fold-left{
+    left:-5%;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
+  .fold-right{
+    right:-5%;
+    clip-path: polygon(100% 0, 0 50%, 100% 100%);
+  }
+
+  /* top flap */
+  .flap{
+    position:absolute; left:0; right:0; top:0;
+    height:62%;
+    background: linear-gradient(135deg, #ffeef2, #ffb9c8);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: 50% 0%;
+    transform: rotateX(0deg);
+    transition: transform 900ms cubic-bezier(.2,.9,.2,1);
+    border-bottom:1px solid rgba(0,0,0,.06);
+  }
+
+  /* heart seal */
+  .seal{
+    position:absolute;
+    left:50%; top:52%;
+    width:58px; height:58px;
+    transform: translate(-50%,-50%);
+    border-radius:18px;
+    background: radial-gradient(circle at 30% 30%, #ff7aa2, #ff2d55);
+    box-shadow: 0 16px 30px rgba(255,45,85,.35);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:#fff;
+    font-size:26px;
+    transition: transform 500ms ease, opacity 400ms ease;
+  }
+
+  /* letter */
+  .letter{
+    position:absolute;
+    left:50%;
+    bottom:18px;
+    width: calc(100% - 34px);
+    height: 210px;
+    transform: translateX(-50%) translateY(48px);
+    background: var(--card);
+    border-radius:20px;
+    border:1px solid rgba(0,0,0,.08);
+    box-shadow: 0 18px 40px rgba(0,0,0,.14);
+    backdrop-filter: blur(10px);
+    padding:18px 16px;
+    opacity:0;
+    transition: transform 900ms cubic-bezier(.2,.9,.2,1), opacity 600ms ease;
+    overflow:hidden;
+  }
+
+  .letter h2{
+    margin:0 0 6px;
+    font-size:18px;
+    color:var(--ink);
+    letter-spacing:.2px;
+  }
+  .typed{
+    margin:10px 0 0;
+    line-height:1.55;
+    font-size:16px;
+    color:var(--ink);
+    min-height:78px;
+  }
+  .sig{
+    margin-top:10px;
+    font-weight:900;
+    color:#111;
+  }
+
+  .hint{
+    margin-top:10px;
+    font-size:13px;
+    opacity:.7;
+  }
+
+  /* confetti */
+  .confetti{
+    position:fixed;
+    inset:0;
     pointer-events:none;
+    overflow:hidden;
   }
   .c{
     position:absolute;
     left:50%;
-    top:25%;
-    width:10px;
-    height:14px;
+    top:35%;
+    width:10px; height:14px;
     border-radius:3px;
     background: hsl(var(--h), 90%, 60%);
-    transform: translate(-50%, -50%) rotate(var(--r));
+    transform: translate(-50%,-50%) rotate(var(--r));
     animation: pop var(--t) ease-out forwards;
     opacity:.95;
   }
@@ -143,81 +229,181 @@
     100%{ transform: translate(-50%,-50%) translate(var(--dx), var(--dy)) rotate(calc(var(--r) + 240deg)); opacity:0; }
   }
 
-  /* small sparkle stars */
-  .spark{
-    position:absolute;
-    width:6px;height:6px;
-    border-radius:50%;
-    background:#fff;
-    opacity:.0;
-    animation: twinkle 2.8s ease-in-out infinite;
-    pointer-events:none;
-    filter: blur(.2px);
+  /* gallery */
+  .gallery{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:10px;
+    opacity:0;
+    transform: translateY(12px);
+    transition: opacity 700ms ease, transform 700ms ease;
   }
-  @keyframes twinkle{
-    0%,100%{ opacity:0; transform: scale(.7); }
-    50%{ opacity:.85; transform: scale(1.25); }
+  .gallery.show{
+    opacity:1;
+    transform: translateY(0);
+  }
+  .ph{
+    background:#ffffffcc;
+    border:1px solid rgba(0,0,0,.08);
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow: 0 14px 28px rgba(0,0,0,.12);
+    aspect-ratio: 1 / 1;
+    position:relative;
+  }
+  .ph img{
+    width:100%; height:100%;
+    object-fit: cover;
+    display:block;
+    transform: scale(1.05);
+    filter: saturate(1.05);
+    opacity:0;
+    animation: fadeIn 900ms ease forwards;
+  }
+  .gallery.show .ph:nth-child(1) img{ animation-delay: 80ms; }
+  .gallery.show .ph:nth-child(2) img{ animation-delay: 220ms; }
+  .gallery.show .ph:nth-child(3) img{ animation-delay: 360ms; }
+
+  @keyframes fadeIn{
+    from{ opacity:0; transform: scale(1.12); }
+    to{ opacity:1; transform: scale(1.05); }
+  }
+
+  /* OPEN state animations */
+  .open .flap{ transform: rotateX(175deg); }
+  .open .seal{ transform: translate(-50%,-50%) scale(.75); opacity:0; }
+  .open .letter{
+    transform: translateX(-50%) translateY(-40px);
+    opacity:1;
+  }
+
+  /* small button inside letter */
+  .btn{
+    margin-top:12px;
+    width:100%;
+    border:none;
+    border-radius:14px;
+    padding:12px 14px;
+    font-weight:900;
+    font-size:15px;
+    color:#fff;
+    background: linear-gradient(135deg, var(--accent), #ff7aa2);
+    box-shadow: 0 14px 26px rgba(255,59,107,.32);
+    cursor:pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:active{ transform: scale(.99); }
+
+  /* tap heart pop */
+  .tapHeart{
+    position:fixed;
+    transform: translate(-50%,-50%);
+    font-size:22px;
+    pointer-events:none;
+    transition: transform .8s ease, opacity .8s ease;
+    opacity:1;
+    filter: drop-shadow(0 10px 16px rgba(0,0,0,.18));
+  }
+
+  /* footer */
+  .footer{
+    text-align:center;
+    color:#fff;
+    opacity:.85;
+    margin-top:10px;
+    font-size:13px;
+    text-shadow: 0 8px 18px rgba(0,0,0,.18);
   }
 </style>
 </head>
 
 <body>
   <div class="glow"></div>
+  <div class="confetti" id="confetti"></div>
 
-  <!-- Sparks -->
-  <div id="sparks"></div>
+  <div class="stage">
+    <h1 class="title">💌 Надаас чамд</h1>
 
-  <main class="card" id="card">
-    <button class="btn" id="btn">💖 Дар</button>
+    <div class="envelopeWrap">
+      <div class="envelope" id="env" aria-label="Valentine envelope">
+        <div class="env-back">
+          <div class="fold-left"></div>
+          <div class="fold-right"></div>
+          <div class="pocket"></div>
+          <div class="flap"></div>
+          <div class="seal">💗</div>
 
-    <section class="msg" id="msg">
-      <div class="typed" id="typed"></div>
-      <div class="sig" id="sig"></div>
-    </section>
+          <div class="letter" id="letter">
+            <h2>🌹 Валентины мэнд</h2>
+            <div class="typed" id="typed"></div>
+            <div class="sig" id="sig"></div>
+            <button class="btn" id="showPicsBtn">📷 Зургуудыг үзэх</button>
+            <div class="hint">Дугтуйн дээр дарж нээ, дараа нь зургууд гарна.</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <div class="confetti" id="confetti"></div>
-  </main>
+    <div class="gallery" id="gallery">
+      <!-- Зурагны файлын нэрийг repo дээр upload хийсэнтэйгээ тааруул -->
+      <div class="ph"><img src="img1.jpg" alt="photo 1"></div>
+      <div class="ph"><img src="img2.jpg" alt="photo 2"></div>
+      <div class="ph"><img src="img3.jpg" alt="photo 3"></div>
+    </div>
+
+    <div class="footer">✨ Дугтуй нээгдээд мэндчилгээ гарч, дараа нь 3 зураг гарна.</div>
+  </div>
 
 <script>
-  // ===== Floating hearts (always) =====
+  // ===== floating hearts background =====
   const heartEmojis = ["💗","💖","💘","❤️","💞","💝"];
-  function spawnHeart(){
+  function spawnBgHeart(){
     const h = document.createElement("div");
     h.className = "h";
     h.textContent = heartEmojis[Math.floor(Math.random()*heartEmojis.length)];
     h.style.setProperty("--x", (Math.random()*100) + "vw");
-    h.style.setProperty("--s", (16 + Math.random()*18) + "px");
-    h.style.setProperty("--d", (5 + Math.random()*6) + "s");
-    h.style.setProperty("--o", (0.35 + Math.random()*0.45));
+    h.style.setProperty("--s", (16 + Math.random()*20) + "px");
+    h.style.setProperty("--d", (6 + Math.random()*7) + "s");
+    h.style.setProperty("--o", (0.30 + Math.random()*0.45));
     document.body.appendChild(h);
-    setTimeout(()=>h.remove(), 12000);
+    setTimeout(()=>h.remove(), 14000);
   }
-  setInterval(spawnHeart, 420);
-  for(let i=0;i<8;i++) setTimeout(spawnHeart, i*250);
+  for(let i=0;i<8;i++) setTimeout(spawnBgHeart, i*240);
+  setInterval(spawnBgHeart, 520);
 
-  // ===== Sparkles =====
-  const sparks = document.getElementById("sparks");
-  for(let i=0;i<14;i++){
-    const s = document.createElement("div");
-    s.className = "spark";
-    s.style.left = (Math.random()*100) + "vw";
-    s.style.top  = (Math.random()*100) + "vh";
-    s.style.animationDelay = (Math.random()*2.5) + "s";
-    sparks.appendChild(s);
-  }
+  // ===== tap heart pop =====
+  document.addEventListener("pointerdown", (e)=>{
+    // don't block button clicks etc
+    const t = e.target;
+    if (t && (t.tagName === "BUTTON" || t.closest("button"))) return;
 
-  // ===== Confetti burst =====
+    const th = document.createElement("div");
+    th.className = "tapHeart";
+    th.textContent = "💗";
+    th.style.left = e.clientX + "px";
+    th.style.top  = e.clientY + "px";
+    document.body.appendChild(th);
+
+    requestAnimationFrame(()=>{
+      th.style.opacity = 0;
+      th.style.transform = "translate(-50%,-50%) translateY(-80px) scale(1.4)";
+    });
+    setTimeout(()=>th.remove(), 850);
+  });
+
+  // ===== confetti burst =====
   const confettiWrap = document.getElementById("confetti");
   function burstConfetti(){
-    const count = 44;
+    const count = 46;
     for(let i=0;i<count;i++){
       const c = document.createElement("div");
       c.className = "c";
       const hue = Math.floor(Math.random()*360);
       const r = Math.floor(Math.random()*360) + "deg";
-      const t = (700 + Math.random()*800) + "ms";
-      const dx = (Math.random()*2 - 1) * (160 + Math.random()*140);
-      const dy = (Math.random()*2 - 1) * (180 + Math.random()*150);
+      const t = (700 + Math.random()*850) + "ms";
+      const dx = (Math.random()*2 - 1) * (170 + Math.random()*150);
+      const dy = (Math.random()*2 - 1) * (200 + Math.random()*170);
 
       c.style.setProperty("--h", hue);
       c.style.setProperty("--r", r);
@@ -226,29 +412,31 @@
       c.style.setProperty("--dy", dy + "px");
 
       confettiWrap.appendChild(c);
-      setTimeout(()=>c.remove(), 1700);
+      setTimeout(()=>c.remove(), 1800);
     }
   }
 
-  // ===== Typewriter =====
+  // ===== typewriter =====
   const typedEl = document.getElementById("typed");
   const sigEl = document.getElementById("sig");
-  const msgBox = document.getElementById("msg");
-  const card = document.getElementById("card");
-  const btn = document.getElementById("btn");
+  const env = document.getElementById("env");
+  const letter = document.getElementById("letter");
+  const showPicsBtn = document.getElementById("showPicsBtn");
+  const gallery = document.getElementById("gallery");
 
-  const line1 = "Т.Баасанжав таньд гэгээн хайрын валентины мэнд хүргэе. 💝";
-  sigEl.innerHTML = "<br><b>Хүндэтгэсэн: Таны хайрт залуу<br>Г.Мөнх-Од.</b>";
+  const line1 = "Т.Баасанжав танд гэгээн хайрын Валентины мэнд хүргэе. 💝";
+  const line2a = "Хүндэтгэсэн таны хайрт залуу";
+  const line2b = "Г.Мөнх-Од.";
 
-  function typeText(text, el, speed=26){
+  function typeText(text, el, speed=24){
     return new Promise(resolve=>{
       el.textContent = "";
       let i = 0;
-      const t = setInterval(()=>{
+      const timer = setInterval(()=>{
         el.textContent += text[i];
         i++;
         if(i >= text.length){
-          clearInterval(t);
+          clearInterval(timer);
           resolve();
         }
       }, speed);
@@ -256,23 +444,26 @@
   }
 
   let opened = false;
-  btn.addEventListener("click", async ()=>{
-    if(!opened){
-      opened = true;
-      msgBox.classList.add("show");
-      card.style.transform = "translateY(-4px) scale(1.01)";
-      burstConfetti();
-      if(navigator.vibrate) navigator.vibrate(50);
+  env.addEventListener("click", async ()=>{
+    if(opened) return;
+    opened = true;
 
-      await typeText(line1, typedEl, 24);
-      sigEl.innerHTML = "<br><b>" + line2 + "</b>";
-      btn.textContent = "Дахин 💞";
-    }else{
-      // replay confetti only
-      burstConfetti();
-      if(navigator.vibrate) navigator.vibrate(30);
-    }
+    env.classList.add("open");
+    burstConfetti();
+    if(navigator.vibrate) navigator.vibrate(50);
+
+    await typeText(line1, typedEl, 22);
+    sigEl.innerHTML = "<br><b>" + line2a + "<br>" + line2b + "</b>";
+  });
+
+  // show 3 photos
+  showPicsBtn.addEventListener("click", ()=>{
+    gallery.classList.add("show");
+    burstConfetti();
+    if(navigator.vibrate) navigator.vibrate(35);
+    // small scroll hint on some browsers
+    gallery.scrollIntoView({behavior:"smooth", block:"center"});
   });
 </script>
 </body>
-</html>
+  </html>
